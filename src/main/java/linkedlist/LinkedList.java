@@ -1,5 +1,8 @@
 package linkedlist;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import common.Node;
 
 public class LinkedList {
@@ -11,43 +14,28 @@ public class LinkedList {
   public LinkedList() {
   }
 
-  public LinkedList(int value) {
-    Node node = new Node(value);
-    head = node;
-    tail = node;
-    length = 1;
-  }
-
   public void getHead() {
     System.out.println("Head : " + head.getValue());
-  }
-
-  public void setHead(Node head) {
-    this.head = head;
   }
 
   public void getTail() {
     System.out.println("Tail : " + tail.getValue());
   }
 
-  public void setTail(Node tail) {
-    this.tail = tail;
-  }
-
   public void getLength() {
     System.out.println("Length : " + length);
   }
 
-  public void setLength(int length) {
-    this.length = length;
-  }
-
   public void append(int value) {
     Node newNode = new Node(value);
-    if (length == 0) {
+    if (head == null) {
       head = newNode;
     } else {
-      tail.next = newNode;
+      Node current = head;
+      while (current.next != null) {
+        current = current.next;
+      }
+      current.next = newNode;
     }
     tail = newNode;
     length++;
@@ -189,6 +177,136 @@ public class LinkedList {
     }
     System.out.println("LinkedList -> " + stringBuilder);
     System.out.println();
+  }
+
+  public Node findMiddleNode() {
+    Node slow = head;
+    Node fast = head;
+
+    while (fast != null && fast.next != null) {
+      slow = slow.next;
+      fast = fast.next.next;
+    }
+
+    return slow;
+  }
+
+  public boolean hasLoop() {
+    Node slow = head;
+    Node fast = head;
+    if (length == 0 || length == 1) {
+      return false;
+    }
+    while (fast != null && fast.next != null) {
+      slow = slow.next;
+      fast = fast.next.next;
+      if (slow == fast) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public Node findKthFromEnd(int k) {
+    if (head == null || k == 0) {
+      return null;
+    }
+    Node first = head;
+    Node second = head;
+    int i = 1;
+    while (second != null && i < k) {
+      second = second.next;
+      i++;
+    }
+    if (second == null) {
+      return null;
+    }
+    while (second.next != null) {
+      first = first.next;
+      second = second.next;
+    }
+    return first;
+  }
+
+  public void partitionList(int x) {
+    if (head == null) {
+      return;
+    }
+
+    Node dummy1 = new Node(0);
+    Node dummy2 = new Node(0);
+    Node prev1 = dummy1;
+    Node prev2 = dummy2;
+    Node current = head;
+
+    while (current != null) {
+      if (current.value < x) {
+        prev1.next = current;
+        prev1 = current;
+      } else {
+        prev2.next = current;
+        prev2 = current;
+      }
+      current = current.next;
+    }
+
+    prev2.next = null;
+    prev1.next = dummy2.next;
+
+    head = dummy1.next;
+  }
+
+  public void removeDuplicates() {
+    Set<Integer> values = new HashSet<>();
+
+    Node previous = null;
+    Node current = head;
+    while (current != null) {
+      if (values.contains(current.value)) {
+        previous.next = current.next;
+        length--;
+      } else {
+        values.add(current.value);
+        previous = current;
+      }
+      current = current.next;
+    }
+  }
+
+  public int binaryToDecimal() {
+    int sum = 0;
+
+    Node current = head;
+    while (current != null) {
+      sum = sum * 2 + current.value;
+      current = current.next;
+    }
+
+    return sum;
+  }
+
+  public void reverseBetween(int startIndex, int endIndex) {
+    if (head == null) {
+      return;
+    }
+
+    Node dummyNode = new Node(0);
+    dummyNode.next = head;
+    Node previousNode = dummyNode;
+
+    for (int i = 0; i < startIndex; i++) {
+      previousNode = previousNode.next;
+    }
+
+    Node currentNode = previousNode.next;
+    for (int i = 0; i < endIndex - startIndex; i++) {
+      Node nodeToMove = currentNode.next;
+      currentNode.next = nodeToMove.next;
+      nodeToMove.next = previousNode.next;
+      previousNode.next = nodeToMove;
+    }
+
+    head = dummyNode.next;
   }
 }
 
